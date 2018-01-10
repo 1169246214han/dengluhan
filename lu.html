@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="" rel="stylesheet" type="text/css">
+    <style></style>
+</head>
+<body>
+<p id="p"></p>
+name:<input type="text" id="names"/><br>
+bookname:<input type="text" id="bookname"/><br>
+text:<input type="text" id="text"/><br>
+times:<input type="text" id="times"/><br>
+
+<button id="btn">录入</button>
+
+
+<script>
+
+    btn.onclick = function(){
+        ajax1({
+            url:'http://localhost:8000/user/lu',
+            type:'post',
+            data:{
+                names:names.value,
+                bookname:bookname.value,
+                text:text.value,
+                times:times.value
+                },
+            success:function(da){
+                console.log(da)
+                window.location.href='http://localhost:8000/list.html'
+            },
+            error:function(){
+            }
+        })
+    }
+
+
+
+    function ajax(text) {
+
+        var xhr = new XMLHttpRequest()
+
+        //这里是post
+        xhr.open('post', text.url, true)
+        xhr.send(text.data)
+
+        xhr.onreadystatechange = function() {
+            if(xhr.readyState == 4) {
+                if(xhr.status >= 200 && xhr.status < 300 || xhr.status == 304) {
+                    text.success(xhr.responseText)
+                } else {
+                    text.error(xhr.status)
+                }
+            }
+        }
+    }
+
+    function ajax1(text) {
+
+        var xhr = new XMLHttpRequest()
+        if(text.type == "get") {
+            //这里是get
+            xhr.open('get', text.url + '?' + strUrl(text.data), true)
+            xhr.send()
+        } else {
+            //这里是post
+            xhr.open('post', text.url, true)
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+            xhr.send(strUrl(text.data))
+        }
+        xhr.onreadystatechange = function() {
+            if(xhr.readyState == 4) {
+                if(xhr.status >= 200 && xhr.status < 300 || xhr.status == 304) {
+                    text.success(xhr.responseText)
+                } else {
+                    text.error(xhr.status)
+                }
+            }
+        }
+
+        function strUrl(json) {
+            var arr = []
+            for(i in json) {
+                arr.push(i + '=' + json[i])
+            }
+            var str = arr.join('&')
+            return str
+
+        }
+    }
+</script>
+</body>
+</html>

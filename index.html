@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="" rel="stylesheet" type="text/css">
+    <style>
+        #box{
+            width: 100px;
+            height: 100px;
+        }
+        #box img{
+           width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+<input type="file" id="img"/>
+<div id="box"></div>
+user:<input type="text" id="user"/><br>
+pass:<input type="text" id="pass"/><br>
+
+<button id="btn">登录</button>
+<button id="btn1">注册</button>
+
+<script>
+    var   urlimg= ''
+    img.onchange = function() {
+        var f = this.files[0]
+        var d = new FormData
+        console.log(f)
+        d.append('img', f)
+        ajax({
+            type: "post",
+            url: "http://localhost:8000/images",
+            data: d,
+            success: function(da) {
+                urlimg = da
+                console.log(da)
+                box.innerHTML = `<img src='http://localhost:8000/${da}'>`
+            },
+            error: function(da) {
+                console.log(da)
+            }
+        })
+    }
+
+    btn1.onclick = function(){
+        ajax1({
+            url:'http://localhost:8000/user/login',
+            type:'post',
+            data:{
+                user:user.value,
+                pass:pass.value
+            },
+            success:function(da){
+                console.log(da)
+            },
+            error:function(){
+
+            }
+        })
+    }
+    btn.onclick = function(){
+        ajax({
+            url:'http://localhost:8000/user/login2',
+            type:'post',
+            data:{
+                user:user.value,
+                pass:pass.value
+            },
+            success:function(da){
+                console.log(da)
+                window.location.href='http://localhost:8000/lu.html'
+            },
+            error:function(){
+            }
+        })
+    }
+
+
+    function ajax(text) {
+
+        var xhr = new XMLHttpRequest()
+
+        //这里是post
+        xhr.open('post', text.url, true)
+        xhr.send(text.data)
+
+        xhr.onreadystatechange = function() {
+            if(xhr.readyState == 4) {
+                if(xhr.status >= 200 && xhr.status < 300 || xhr.status == 304) {
+                    text.success(xhr.responseText)
+                } else {
+                    text.error(xhr.status)
+                }
+            }
+        }
+    }
+
+    function ajax1(text) {
+
+        var xhr = new XMLHttpRequest()
+        if(text.type == "get") {
+            //这里是get
+            xhr.open('get', text.url + '?' + strUrl(text.data), true)
+            xhr.send()
+        } else {
+            //这里是post
+            xhr.open('post', text.url, true)
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+            xhr.send(strUrl(text.data))
+        }
+        xhr.onreadystatechange = function() {
+            if(xhr.readyState == 4) {
+                if(xhr.status >= 200 && xhr.status < 300 || xhr.status == 304) {
+                    text.success(xhr.responseText)
+                } else {
+                    text.error(xhr.status)
+                }
+            }
+        }
+
+        function strUrl(json) {
+            var arr = []
+            for(i in json) {
+                arr.push(i + '=' + json[i])
+            }
+            var str = arr.join('&')
+            return str
+
+        }
+    }
+</script>
+</body>
+</html>

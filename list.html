@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="" rel="stylesheet" type="text/css">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #box{
+            float: left;
+            margin-top: 15px;
+            background-color: #004b8b;
+            width: 255px;
+            height: 100%;
+            border: 1px solid;
+            padding-left: 15px;
+            padding-right: 15px;
+            color: white;
+            padding-bottom: 10px;
+        }
+        #box2{
+            margin-top: 20px;
+            border: 2px solid white;
+        }
+        #box2 img{
+            float: right;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+        button{
+            margin-left: 60px;
+            margin-top: 10px;
+        }
+        /*#btn1{*/
+            /*margin-left: 200px;*/
+            /*margin-right: 10px;*/
+        /*}*/
+       /*#btn{*/
+            /*margin-left: 150px;*/
+            /*margin-top: 0px;*/
+        /*}*/
+        p{
+            margin-left: 5px;
+        }
+        h2{
+            margin-top: 30px;
+            margin-left: 5px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="box">
+
+</div>
+
+
+<script>
+
+    var href = location.href
+    a = href.split('?')[1].split('=')[1]
+    ajax({
+        type: "get",
+        url: "http://localhost:8000/get",
+        data:{
+            uid:a
+        },
+        success: function(da) {
+            console.log(da)
+            var json = eval('('+da+')')
+            user.value = json[0].user
+            password.value = json[0].password
+        },
+        error: function(da) {
+            console.log(da)
+        }
+    })
+
+    //		alert(uid)
+
+    btn.onclick = function(){
+        ajax({
+            type: "get",
+            url: "http://localhost:8000/update",
+            data:{
+                uid:a,
+                name:name.value,
+                bookname:bookname.value,
+                text:text.value
+            },
+            success: function(da) {
+                console.log(da)
+            },
+            error: function(da) {
+                console.log(da)
+            }
+        })
+
+    }
+
+//545
+        function btn(a){
+            ajax({
+                url:'http://localhost:8000/user/shan',
+                type:'post',
+                success:function(da){
+                    console.log(da)
+                },
+                error:function(){
+                }
+            })
+            //alert(a)
+        }
+
+<!--详情-->
+        f()
+        function f(){
+            ajax({
+                url:'http://localhost:8000/user/list',
+                type:'post',
+                success:function(da){
+                    console.log(da);var json=eval('('+da+')');
+                    var str='';
+                    for(var i= 0;i<json.length;i++){
+                        str+=`<div id='box2'>
+                        <h2>名字：${json[i].name}</h2><p>bookname：${json[i].bookname}</p><p>text：${json[i].text}</p><p>密码：${json[i].time}</p>
+                        <button id='btn' onclick='btn(${json[i].uid})'>删除</button>
+                        <button id='btn1'>修改</button></div>`
+                    }
+                    box.innerHTML=str;
+                },
+                error:function(){
+                }
+            })
+        }
+
+
+        function btn(a){
+            ajax({
+                url:'http://localhost:8000/user/shan',
+                type:'get',
+                data:{
+                    uid:a
+                },
+                success:function(da){
+                    console.log(da)
+                    f()
+                },
+                error:function(){
+                }
+            })
+        }
+
+
+
+
+        function ajax(req){
+//	console.log(req.data)
+            if(window.XMLHttpRequest){
+                var ajax = new XMLHttpRequest()
+            }else{
+                var ajax = new ActiveXObject( "Microsoft.XMLHTTP" );
+            }
+            if(req.type == 'get'){
+                ajax.open('get',req.url+'?'+strdata(req.data),true)
+                ajax.send()
+            }else{
+                ajax.open('post',req.url,true)
+                ajax.setRequestHeader("Content-Type","application/x-www-form-urlencoded")
+                ajax.send(strdata(req.data))
+            }
+            ajax.onreadystatechange = function(){
+                if(ajax.readyState == 4){
+                    if(ajax.status>=200 && ajax.status<300 || ajax.status == 304){
+                        req.success(ajax.responseText)
+//					console.log(ajax.responseText)
+                    }else{
+                        req.error(ajax.status)
+                    }
+
+                }
+            }
+
+            function strdata(da){
+                var arr = []
+                for(var i in da){
+                    arr.push(i+'='+da[i])
+                }
+                var strurl = arr.join('&')
+                return strurl
+            }
+        }
+
+</script>
+</body>
+</html>
